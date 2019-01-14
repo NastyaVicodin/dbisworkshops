@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User request</title>
+</head>
+<body>
+<form action="/api" method="post" id="form_user_request">
+    <label>Input user_name:
+        <input name="user_name" type = "text"   value="{{ user_request.get('user_name') }}"/>
+    </label><br>
+    <label>Input  salary:
+        <input name="salary" type = "text"  value="{{ user_request.get('salary') }}"/>
+    </label><br>
+    <label>Input sphere:
+        <input name="sphere" type = "text"  value="{{ user_request.get('sphere') }}"/>
+    </label><br>
+    <label>Input specialization:
+        <input name="specialization" type = "text"   value="{{ user_request.get('specialization') }}"/>
+    </label><br>
+    <label>Input location:
+        <input name="location" type = "text"   value="{{ user_request.get('location') }}"/>
+    </label><br>
+    <button type="submit" form="form_user_request" name="action" value="user_request_update">Submit</button>
+</form>
+</body>
+</html>

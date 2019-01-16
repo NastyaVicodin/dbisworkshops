@@ -5,8 +5,10 @@
 
 drop table check_in_user cascade constraints;
 
+drop table vacancy cascade constraints;
+
 /*==============================================================*/
-/* Table: check_in_user                                       */
+/* Table: check_in_user                                         */
 /*==============================================================*/
 create table check_in_user 
 (
@@ -29,4 +31,19 @@ create table check_in_user
    constraint user_email_constr check(regexp_like(email, '^[0-9a-zA-Z\.]{1,18}@[a-z]{1,8}\.[a-z]{2,3}$')),
    constraint user_login_constr check(regexp_like(login, '^[0-9a-zA-Z]{5,30}$')),
    constraint user_password_constr check(regexp_like(password, '.{8,}'))
+);
+
+/*==============================================================*/
+/* Table: vacancy                                               */
+/*==============================================================*/
+create table vacancy 
+(
+   id_code            NUMBER(10)           not null,
+   vacancy_name       VARCHAR2(30)         not null,
+   company            VARCHAR2(30)         not null,
+   email              VARCHAR2(30)         not null,
+   salary             VARCHAR2(30),
+   location           VARCHAR2(30)         not null,
+   sphere             VARCHAR2(30)         not null,
+   constraint PK_VACANCY primary key (id_code)
 );

@@ -8,53 +8,41 @@ def index():
     return '<h1>Hello from Flask<h1>'
 
 
-vacancy_dictionary = {
-    "vacancy_name": "Software engineer",
-    "salary": "1000",
-    "sphere": "IT",
-    "location": "Ukraine",
-    "company": "Global Logic"
+work_dictionary = {
+    "name": "Software engineer",
+    "salary": "1000"
 }
 
-user_request_dictionary = {
-    "user_name": "Anastasia Lukianenko",
-    "salary": "1000",
-    "sphere": "IT",
-    "specialization": "C developer",
-    "location": "Ukraine"
+person_dictionary = {
+    "name": "Anastasia Lukianenko",
+    "skill": "C"
 }
 
-available_dictionary = dict.fromkeys(['vacancy', 'user_request'], "dict_name")
+available_dictionary = dict.fromkeys(['work', 'person'], "dict_name")
 
 
 @app.route('/api/<action>', methods=['GET'])
 def apiGet(action):
-    if action == "vacancy":
-        return render_template("vacancy.html", vacancy=vacancy_dictionary)
-    elif action == "user_request":
-        return render_template("user_request.html", user_request=user_request_dictionary)
+    if action == "work":
+        return render_template("work.html", work=work_dictionary)
+    elif action == "person":
+        return render_template("person.html", person=person_dictionary)
     elif action == "all":
-        return render_template("all.html", user_request=user_request_dictionary, vacancy=vacancy_dictionary)
+        return render_template("all.html", person=person_dictionary, work=work_dictionary)
     else:
         return render_template("404.html", action_value=action, available=available_dictionary)
 
 
 @app.route('/api', methods=['POST'])
 def apiPost():
-    if request.form["action"] == "vacancy_update":
-        vacancy_dictionary["vacancy_name"] = request.form["vacancy_name"]
-        vacancy_dictionary["salary"] = request.form["salary"]
-        vacancy_dictionary["sphere"] = request.form["sphere"]
-        vacancy_dictionary["location"] = request.form["location"]
-        vacancy_dictionary["company"] = request.form["company"]
+    if request.form["action"] == "work_update":
+        work_dictionary["name"] = request.form["name"]
+        work_dictionary["salary"] = request.form["salary"]
         return redirect(url_for('apiGet', action="all"))
 
-    elif request.form["action"] == "user_request_update":
-        user_request_dictionary["user_name"] = request.form["user_name"]
-        user_request_dictionary["salary"] = request.form["salary"]
-        user_request_dictionary["sphere"] = request.form["sphere"]
-        user_request_dictionary["specialization"] = request.form["specialization"]
-        user_request_dictionary["location"] = request.form["location"]
+    elif request.form["action"] == "person_update":
+        person_dictionary["name"] = request.form["name"]
+        person_dictionary["skill"] = request.form["skill"]
         return redirect(url_for('apiGet', action="all"))
 
 

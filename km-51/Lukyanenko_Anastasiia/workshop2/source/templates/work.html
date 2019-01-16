@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Work</title>
+</head>
+<body>
+<form action="/api" method="post" id="form_work">
+    <label>Input name:
+        <input name="name" type = "text" value="{{ work.get('name') }}"/>
+    </label><br>
+    <label>Input salary:
+        <input name="salary" type = "text"  value="{{ work.get('salary') }}"/>
+    </label><br>
+    <button type="submit" form="form_work" name="action" value="work_update">Submit</button>
+</form>
+</body>
+</html>

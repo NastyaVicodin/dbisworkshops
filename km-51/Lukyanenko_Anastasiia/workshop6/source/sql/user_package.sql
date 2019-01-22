@@ -1,0 +1,212 @@
+CREATE OR REPLACE PACKAGE user_package AS
+    TYPE user_row IS RECORD (
+last_name check_in_user.last_name%TYPE,
+first_name check_in_user.first_name%TYPE,
+login check_in_user.login%TYPE,
+password check_in_user.password%TYPE,
+email check_in_user.email%TYPE,
+salary check_in_user.salary%TYPE,
+specialization check_in_user.specialization%TYPE,
+location check_in_user.location%TYPE,
+sphere check_in_user.sphere%TYPE
+);
+
+TYPE user_table IS
+ TABLE OF user_row;
+
+FUNCTION get_user (
+p_login   IN          check_in_user.login%TYPE
+    )
+RETURN user_table
+        PIPELINED;
+
+
+PROCEDURE authorization (
+status       OUT          VARCHAR2,
+        p_login      IN           check_in_user.login%TYPE,
+
+p_password   IN           check_in_user.password%TYPE
+);
+
+
+PROCEDURE registration (
+        status          OUT             VARCHAR2,
+p_last_name      IN              check_in_user.last_name%TYPE,
+p_first_name     IN              check_in_user.first_name%TYPE,
+p_login          IN              check_in_user.login%TYPE,
+p_password       IN              check_in_user.password%TYPE,
+p_email          IN              check_in_user.email%TYPE,
+p_salary         IN              check_in_user.salary%TYPE,
+p_specialization IN              check_in_user.specialization%TYPE,
+p_location       IN              check_in_user.location%TYPE,
+p_sphere         IN              check_in_user.sphere%TYPE);
+
+
+PROCEDURE edit_user_info (
+status           OUT              VARCHAR2,
+p_last_name      IN               check_in_user.last_name%TYPE,
+p_first_name     IN               check_in_user.first_name%TYPE,
+p_email          IN               check_in_user.email%TYPE,
+p_login          IN               check_in_user.login%TYPE,
+p_salary         IN              check_in_user.salary%TYPE,
+p_specialization IN              check_in_user.specialization%TYPE,
+p_location       IN              check_in_user.location%TYPE,
+p_sphere         IN              check_in_user.sphere%TYPE,
+p_password       IN               check_in_user.password%TYPE,
+p_new_password   IN               check_in_user.password%TYPE
+    );
+
+
+END user_package;
+/
+
+
+CREATE OR REPLACE PACKAGE BODY user_package AS
+
+    FUNCTION get_user (
+        p_login   IN          check_in_user.login%TYPE
+    ) RETURN user_table
+        PIPELINED
+    IS
+    BEGIN
+        FOR curr IN (
+            SELECT DISTINCT
+                last_name,
+                first_name,
+                login,
+                password,
+                email,
+                salary,
+                specialization,
+                location,
+                sphere            FROM
+                check_in_user
+            WHERE
+                check_in_user.login = p_login
+        ) LOOP
+            PIPE ROW ( curr );
+        END LOOP;
+    END get_user;
+
+    PROCEDURE authorization (
+        status       OUT          VARCHAR2,
+        p_login      IN           check_in_user.login%TYPE,
+        p_password   IN           check_in_user.password%TYPE
+    ) IS
+        user_count   NUMBER;
+    BEGIN
+        SELECT
+            COUNT(*)
+        INTO user_count
+        FROM
+            check_in_user
+        WHERE
+            check_in_user.login = p_login
+            AND check_in_user.password = p_password;
+
+        IF user_count > 0 THEN
+            status := 'OK';
+        ELSE
+            status := 'NOT FOUND';
+        END IF;
+
+    END authorization;
+
+
+PROCEDURE registration (
+        status         OUT            VARCHAR2,
+p_last_name      IN             check_in_user.last_name%TYPE,
+p_first_name     IN             check_in_user.first_name%TYPE,
+p_login          IN             check_in_user.login%TYPE,
+p_password       IN             check_in_user.password%TYPE,
+p_email          IN             check_in_user.email%TYPE,
+p_salary         IN              check_in_user.salary%TYPE,
+p_specialization IN              check_in_user.specialization%TYPE,
+p_location       IN              check_in_user.location%TYPE,
+p_sphere         IN              check_in_user.sphere%TYPE    ) IS
+    BEGIN
+        INSERT INTO check_in_user (
+            last_name,
+            first_name,
+            login,
+            password,
+            email, salary, specialization, location, sphere)
+            VALUES (
+            p_last_name,
+            p_first_name,
+            p_login,
+            p_password,
+            p_email, p_salary, p_specialization, p_location, p_sphere);
+
+        COMMIT;
+        status := 'OK';
+    EXCEPTION
+        WHEN OTHERS THEN
+            status := sqlerrm;
+    END registration;
+
+
+PROCEDURE edit_user_info (
+        status           OUT              VARCHAR2,
+p_last_name      IN               check_in_user.last_name%TYPE,
+p_first_name     IN               check_in_user.first_name%TYPE,
+p_email          IN               check_in_user.email%TYPE,
+p_login          IN               check_in_user.login%TYPE,
+p_salary         IN              check_in_user.salary%TYPE,
+p_specialization IN              check_in_user.specialization%TYPE,
+p_location       IN              check_in_user.location%TYPE,
+p_sphere         IN              check_in_user.sphere%TYPE,
+p_password       IN               check_in_user.password%TYPE,
+p_new_password   IN               check_in_user.password%TYPE) IS
+        user_count   NUMBER;
+    BEGIN
+        IF p_last_name IS NOT NULL THEN
+            UPDATE check_in_user
+            SET
+                check_in_user.last_name = p_last_name,
+                check_in_user.first_name = p_first_name,
+                check_in_user.email = p_email,
+                check_in_user.login = p_login, 
+check_in_user.salary = p_salary,
+check_in_user.specialization = p_specialization,
+check_in_user.location = p_location,
+check_in_user.sphere = p_sphere
+           WHERE
+                check_in_user.login = p_login;
+
+            COMMIT;
+            status := 'OK';
+        END IF;
+
+        IF p_new_password IS NOT NULL AND p_password IS NOT NULL THEN
+            SELECT
+                COUNT(*)
+            INTO user_count
+            FROM
+                check_in_user
+            WHERE
+                check_in_user.login = p_login
+                AND check_in_user.password = p_password;
+
+            IF user_count > 0 THEN
+                UPDATE check_in_user
+                SET
+                    check_in_user.password = p_new_password
+                WHERE
+                    check_in_user.login = p_login;
+
+                COMMIT;
+                status := 'OK';
+            ELSE
+                status := 'INVALID PASSWORD';
+            END IF;
+
+        END IF;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            status := sqlerrm;
+    END edit_user_info;
+
+END user_package;
+/

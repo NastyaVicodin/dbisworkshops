@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h1>Search</h1>
+    {% from "includes/_formhelpers.html" import render_field %}
+<table class="rtable">
+<tbody>
+<tr>
+        <td><b>Vacancy name</b></td>
+    <td><b>Company</b></td>
+    <td><b>Email</b></td>
+    <td><b>Salary</b></td>
+    <td><b>Location</b></td>
+    <td><b>Sphere</b></td>
+</tr>
+    {% for vacancy in data %}
+
+<tr>
+        {% for row in vacancy %}
+
+        <td> {{ row }} </td>
+        {% endfor %}
+</tr>
+    {% endfor %}
+</tbody>
+</table>
+{% endblock %}
